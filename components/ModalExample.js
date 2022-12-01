@@ -15,43 +15,62 @@ const style = {
   p: 4,
 };
 
-function ModelExample({ eventModal, setEventModal, event }) {
+function ModelExample({ eventModal, setEventModal, event, setEvents, events }) {
   const toggle = () => {
     setEventModal(false);
+  };
+  const deleteEvent = () => {
+    toggle();
+    const newEvents = events.filter((val) => {
+      return event !== val;
+    });
+    setEvents(newEvents);
   };
 
   return (
     <div>
       <Modal
-        open={eventModal}
+        open={eventModal || addModal}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
         <Box sx={{ ...style, width: 500 }}>
-          <h2 id="parent-modal-title">Etkinlik</h2>
+          <div>
+            <h2 id="parent-modal-title">Etkinlik</h2>
+            <br />
+            <div
+              className="center"
+              style={{ justifyContent: "center", display: "flex" }}
+            >
+              <p>{event.title}</p>
+            </div>
+            <div
+              className="center"
+              style={{ justifyContent: "center", display: "flex" }}
+            >
+              <p>{event.start.toString()}</p>
+            </div>
+            <div
+              className="center"
+              style={{ justifyContent: "center", display: "flex" }}
+            >
+              <p>{event.end.toString()}</p>
+            </div>
+          </div>
           <br />
-          <div
-            className="center"
-            style={{ justifyContent: "center", display: "flex" }}
-          >
-            <p>{event.title}</p>
+          <div style={{ display: "flex" }}>
+            <Button color="secondary" onClick={toggle} variant="contained">
+              Kapat
+            </Button>
+            <Button
+              color="error"
+              onClick={deleteEvent}
+              variant="contained"
+              sx={{ ml: 3 }}
+            >
+              Etkinliği Sil
+            </Button>
           </div>
-          <div
-            className="center"
-            style={{ justifyContent: "center", display: "flex" }}
-          >
-            <p>{event.start.toString()}</p>
-          </div>
-          <div
-            className="center"
-            style={{ justifyContent: "center", display: "flex" }}
-          >
-            <p>{event.end.toString()}</p>
-          </div>
-          <br />
-          <Button color="secondary" onClick={toggle} variant="contained">
-            Kapat
-          </Button>
         </Box>
       </Modal>
     </div>

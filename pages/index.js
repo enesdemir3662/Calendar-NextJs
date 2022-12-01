@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import ModalExample from "../components/ModalExample";
+import Drawer from "../components/Drawer";
 
 import format from "date-fns/format";
 import getDay from "date-fns/getDay";
@@ -10,10 +11,6 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
-
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { Stack, TextField, Autocomplete, Button } from "@mui/material";
 
 const locales = {
@@ -134,31 +131,11 @@ const Home = () => {
       end: new Date(new Date().setHours(new Date().getHours() + 11)),
     },
   ]);
-  const [newEvents, setNewEvents] = useState([]);
-
-  const [inputValue, setInputValue] = useState({
-    title: "",
-    start: new Date(new Date().setHours(new Date().getHours() - 11)),
-    end: new Date(new Date().setHours(new Date().getHours() + 11)),
-  });
   const [values, setValues] = useState(events);
   const [value, setValue] = React.useState(dayjs("2022-08-07T19:58:54.000Z"));
   const [eventModal, setEventModal] = useState(false);
   const [event, setEvent] = useState();
-
-  const clickButton = () => {
-    if (
-      inputValue.title === "" ||
-      inputValue.start === "" ||
-      inputValue.end === ""
-    ) {
-      toast.error("Boşlukları doldurun!");
-    } else if (inputValue.start >= inputValue.end) {
-      toast.error("Seçmiş olduğunuz bitiş tarihi başlangıç tarihinden erken!");
-    } else {
-      setEvents([...events, inputValue]);
-    }
-  };
+  const [newEvents, setNewEvents] = useState([]);
 
   const showModal = (event) => {
     setEvent(event);
@@ -172,6 +149,8 @@ const Home = () => {
           event={event}
           eventModal={eventModal}
           setEventModal={setEventModal}
+          setEvents={setEvents}
+          events={events}
         />
       )}
       <br />
@@ -186,15 +165,6 @@ const Home = () => {
             filterSelectedOptions
             onChange={(event, newValue) => {
               setValues(newValue);
-              // let newEvents_ = events.filter(({ title }) => {
-              //   let control = "";
-              //   newValue.map((v) => {
-              //     if (v.title === title) {
-              //       control = v.title;
-              //     }
-              //   });
-              //   return title === control;
-              // });
               setNewEvents(newValue);
             }}
             renderInput={(params) => (
@@ -208,61 +178,7 @@ const Home = () => {
             )}
           />
         </Stack>
-        <TextField
-          label="Etkinlik ekle"
-          id="outlined-size-small"
-          size="small"
-          type="text"
-          value={inputValue.event}
-          onChange={(e) =>
-            setInputValue((prev) => ({
-              ...prev,
-              title: e.target.value,
-            }))
-          }
-          sx={{ mr: 5, ml: 5 }}
-        />
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack spacing={3}>
-            <DesktopDatePicker
-              label="Başlangıç Tarihi"
-              inputFormat="DD/MM/YYYY"
-              value={inputValue.start}
-              onChange={(e) =>
-                setInputValue((prev) => ({
-                  ...prev,
-                  start: e.$d,
-                }))
-              }
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </Stack>
-        </LocalizationProvider>
-        <LocalizationProvider dateAdapter={AdapterDayjs} sx={{ ms: 5 }}>
-          <Stack spacing={3}>
-            <DesktopDatePicker
-              label="Bitiş Tarihi"
-              inputFormat="DD/MM/YYYY"
-              value={inputValue.end}
-              onChange={(e) =>
-                setInputValue((prev) => ({
-                  ...prev,
-                  end: e.$d,
-                }))
-              }
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </Stack>
-        </LocalizationProvider>
-
-        <Button
-          style={{ marginTop: "10px" }}
-          onClick={clickButton}
-          variant="contained"
-          sx={{ ml: 5 }}
-        >
-          Ekle
-        </Button>
+        <Drawer events={events} setEvents={setEvents} />
       </div>
       <Calendar
         localizer={localizer}
